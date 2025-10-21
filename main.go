@@ -2,16 +2,32 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
-	"strings"
+
+	"girhub.com/maddox-bayn/go-book/book"
 )
 
 func main() {
-	/*var args string
-	for _, arg := range os.Args[1:] {
-		args += " " + arg
-		//fmt.Printf("Argument %d: %s \n", i, arg)
+	// If command-line args are provided, print them using the book package.
+	if len(os.Args) > 1 {
+		book.PrintOsArgs()
+		return
 	}
-	fmt.Println(args)*/
-	fmt.Println(strings.Join(os.Args[1:], " "))
+
+	// Read from stdin in small chunks and report bytes read until EOF.
+	b := make([]byte, 8)
+	for {
+		n, err := os.Stdin.Read(b)
+		if n > 0 {
+			fmt.Printf("got %d bytes: %q\n", n, b[:n])
+		}
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			fmt.Fprintf(os.Stderr, "read error: %v\n", err)
+			os.Exit(1)
+		}
+	}
 }
