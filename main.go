@@ -1,33 +1,38 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"io"
 	"os"
-
-	"girhub.com/maddox-bayn/go-book/book"
 )
 
 func main() {
-	// If command-line args are provided, print them using the book package.
-	if len(os.Args) > 1 {
-		book.PrintOsArgs()
-		return
-	}
-
-	// Read from stdin in small chunks and report bytes read until EOF.
-	b := make([]byte, 8)
-	for {
-		n, err := os.Stdin.Read(b)
-		if n > 0 {
-			fmt.Printf("got %d bytes: %q\n", n, b[:n])
-		}
-		if err != nil {
-			if err == io.EOF {
-				break
+	counts := make(map[string]int)
+	files := os.Args[1:]
+	if len(files) == 0 {
+		countLines(os.Stdin, counts)
+	} else {
+		for _, filename := range files {
+			f, err := os.Open(filename)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "dup2: %v\n", err)
+				continue
 			}
-			fmt.Fprintf(os.Stderr, "read error: %v\n", err)
-			os.Exit(1)
+			countLines(f, counts)
+			f.Close()
 		}
 	}
+	for line, n := range counts {
+		if n > 1 {
+			fmt.Printf("%d\t%s\n", n, line)
+		}
+	}
+}
+
+func countLines(f *os.File, counts map[string]int) {
+	input := bufio.NewScanner(f)
+	for input.Scan() {
+		counts[input.Text()]++
+	}
+	// NOTE: ignoring potential errors from input.Err()
 }
