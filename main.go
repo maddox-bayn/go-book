@@ -33,8 +33,20 @@ func main() {
 		lines = append(lines, scanner.Text())
 	}
 
-	// Now print the reversed lines
+	// Create a buffered writer and write all reversed lines to it,
+	// then flush once at the end for better performance.
+	bw := bufio.NewWriter(os.Stdout)
+	defer func() {
+		if err := bw.Flush(); err != nil {
+			fmt.Fprintln(os.Stderr, "error flushing output:", err)
+		}
+	}()
+
+	// Now write the reversed lines to the buffer
 	for _, l := range lines {
-		fmt.Println(reverse(l))
+		if _, err := bw.WriteString(reverse(l) + "\n"); err != nil {
+			fmt.Fprintln(os.Stderr, "error writing output:", err)
+			break
+		}
 	}
 }
