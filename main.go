@@ -1,23 +1,40 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
 
-var x uint8 = 1<<1 | 1<<5
-var y uint8 = 1<<1 | 1<<2
+// reverse returns the rune-wise reversed string of s.
+func reverse(s string) string {
+	r := []rune(s)
+	for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {
+		r[i], r[j] = r[j], r[i]
+	}
+	return string(r)
+}
 
 func main() {
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Println("Enter 3 lines (press Enter after each). Finish early with Ctrl+Z Enter on PowerShell:")
 
-	fmt.Printf("%08b\n", x)    // "00100010", the set {1, 5}
-	fmt.Printf("%08b\n", y)    // "00000110", the set {1, 2}
-	fmt.Printf("%08b\n", x&y)  // "00000010", the intersection {1}
-	fmt.Printf("%08b\n", x|y)  // "00100110", the union {1, 2, 5}
-	fmt.Printf("%08b\n", x^y)  // "00100100", the symmetric difference {2, 5}
-	fmt.Printf("%08b\n", x&^y) // "00100000", the difference {5}
-	for i := uint(0); i < 8; i++ {
-		if x&(1<<i) != 0 { // membership test
-			fmt.Println(i) // "1", "5"
+	// Buffer the lines first, then print the reversed lines all at once.
+	var lines []string
+	for i := 0; i < 3; i++ {
+		if !scanner.Scan() {
+			if err := scanner.Err(); err != nil {
+				fmt.Fprintln(os.Stderr, "error reading input:", err)
+			} else {
+				fmt.Fprintln(os.Stderr, "EOF reached before 3 lines (printing any lines read so far)")
+			}
+			break
 		}
+		lines = append(lines, scanner.Text())
 	}
-	fmt.Printf("%08b\n", x<<1) // "01000100", the set {2, 6}
-	fmt.Printf("%08b\n", x>>1) // "00010001", the set {0, 4}
+
+	// Now print the reversed lines
+	for _, l := range lines {
+		fmt.Println(reverse(l))
+	}
 }
