@@ -1,29 +1,14 @@
-//Create a 3×3 tic-tac-toe board using var board [3][3]rune and let the middle be x
-
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func main() {
-	fmt.Println("Tic-Tac-Toe Board:")
-
-	var board [3][3]rune
-
-	// Initialize board: place 'X' in the center, spaces elsewhere
-	for i := range board {
-		for j := range board[i] {
-			if i == 1 && j == 1 {
-				board[i][j] = 'X'
-			} else {
-				board[i][j] = ' '
-			}
-		}
-	}
-
-	// Print rows
-	for _, row := range board {
-		fmt.Printf("|%c|%c|%c|\n", row[0], row[1], row[2])
-	}
+	s := []int{2, 3, 4}
+	//s = append(s, 0) // Step 1: Grow the slice by one (placeholder)
+	fmt.Printf("After append: %v\n", s)
+	fmt.Println(s[1:])
+	copy(s[1:], s)
+	fmt.Printf("After copy: %v\n", s)
+	s[0] = 1                      // Step 3: Set the first element
+	fmt.Println(s[0], s[1], s[2]) // Output: 1 2 3 4
 }
