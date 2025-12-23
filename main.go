@@ -1,21 +1,45 @@
+/*
+{
+  "id": 1,
+  "email": "user@example.com",
+  "roles": ["admin", "editor"],
+  "profile": {
+    "age": 30,
+    "bio": "Go dev"
+  }
+}
+*/
+
 package main
 
 import (
 	"encoding/json"
-	"net/http"
+	"fmt"
 )
 
-type User struct {
-	Id   int
-	Name string
+type Profile struct {
+	Age int    `json:"age"`
+	Bio string `json:"bio"`
 }
 
-func handler(w http.ResponseWriter, r http.Request) {
+type User struct {
+	ID      int      `json:"id"`
+	Email   string   `json:"email"`
+	Role    []string `json:"role"`
+	Profile Profile  `json:"profile"`
+}
+
+func main() {
+	raw := []byte(`{
+	"id": 1,
+	"email": "maddoxgmail.com",
+	"role": ["admin", "master"],
+	"profile": {"age": 30, "bio": "Go dev"}
+	}`)
 	var u User
-	if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
-		http.Error(w, "Bad request: error", 400)
-		return
+	err := json.Unmarshal(raw, &u)
+	if err != nil {
+		panic(err)
 	}
-	w.Header().Set("application", "json")
-	json.NewEncoder(w).Encode(u)
+	fmt.Println(u)
 }
