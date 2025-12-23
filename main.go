@@ -2,18 +2,20 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"net/http"
 )
 
-func main() {
-	type User struct {
-		ID    int    `json:"id"`
-		Name  string `json:"name"`
-		Email string `json:"email"`
-	}
+type User struct {
+	Id   int
+	Name string
+}
+
+func handler(w http.ResponseWriter, r http.Request) {
 	var u User
-
-	json.Unmarshal([]byte(`{"id":1,"name":"maddox","email":"maddox@gmail.com"}`), &u)
-
-	fmt.Println(u.ID, u.Name, u.Email)
+	if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
+		http.Error(w, "Bad request: error", 400)
+		return
+	}
+	w.Header().Set("application", "json")
+	json.NewEncoder(w).Encode(u)
 }
