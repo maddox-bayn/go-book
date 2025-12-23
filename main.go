@@ -11,11 +11,9 @@ func main() {
 		Name  string `json:"name"`
 		Email string `json:"email"`
 	}
+	var u User
 
-	contaent, _ := json.Marshal(User{
-		ID:    1,
-		Name:  "Maddox",
-		Email: "maddox@gmail.com",
-	})
-	fmt.Println(string(contaent))
+	json.Unmarshal([]byte(`{"id":1,"name":"maddox","email":"maddox@gmail.com"}`), &u)
+
+	fmt.Println(u.ID, u.Name, u.Email)
 }
