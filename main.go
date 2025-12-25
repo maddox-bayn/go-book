@@ -1,45 +1,23 @@
-/*
-{
-  "id": 1,
-  "email": "user@example.com",
-  "roles": ["admin", "editor"],
-  "profile": {
-    "age": 30,
-    "bio": "Go dev"
-  }
-}
-*/
-
 package main
 
-import (
-	"encoding/json"
-	"fmt"
-)
+import "html/template"
 
-type Profile struct {
-	Age int    `json:"age"`
-	Bio string `json:"bio"`
-}
-
-type User struct {
-	ID      int      `json:"id"`
-	Email   string   `json:"email"`
-	Role    []string `json:"role"`
-	Profile Profile  `json:"profile"`
-}
-
-func main() {
-	raw := []byte(`{
-	"id": 1,
-	"email": "maddoxgmail.com",
-	"role": ["admin", "master"],
-	"profile": {"age": 30, "bio": "Go dev"}
-	}`)
-	var u User
-	err := json.Unmarshal(raw, &u)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(u)
-}
+var issueList = template.Must(template.New("issuelist").Parse(`
+<h1>{{.TotalCount}} issues</h1>
+<table>
+<tr style='text-align: left'>
+<th>#</th>
+<th>State</th>
+<th>User</th>
+<th>Title</th>
+</tr>
+{{range .Items}}
+<tr>
+<td><a href='{{.HTMLURL}}'>{{.Number}}</td>
+<td>{{.State}}</td>
+<td><a href='{{.User.HTMLURL}}'>{{.User.Login}}</a></td>
+<td><a href='{{.HTMLURL}}'>{{.Title}}</a></td>
+</tr>
+{{end}}
+</table>
+`))
