@@ -1,23 +1,26 @@
 package main
 
-import "html/template"
+import "fmt"
 
-var issueList = template.Must(template.New("issuelist").Parse(`
-<h1>{{.TotalCount}} issues</h1>
-<table>
-<tr style='text-align: left'>
-<th>#</th>
-<th>State</th>
-<th>User</th>
-<th>Title</th>
-</tr>
-{{range .Items}}
-<tr>
-<td><a href='{{.HTMLURL}}'>{{.Number}}</td>
-<td>{{.State}}</td>
-<td><a href='{{.User.HTMLURL}}'>{{.User.Login}}</a></td>
-<td><a href='{{.HTMLURL}}'>{{.Title}}</a></td>
-</tr>
-{{end}}
-</table>
-`))
+func multiplier(factor int) func(int) int {
+	return func(n int) int {
+		return n * factor
+	}
+}
+
+func main() {
+	var fns []func()
+
+	for i := 0; i < 3; i++ {
+		i := i // shadow variable
+		fns = append(fns, func() {
+			fmt.Println(i)
+		})
+	}
+
+	for _, fn := range fns {
+		fn()
+	}
+	mult := multiplier(4)
+	fmt.Println(mult(4))
+}
