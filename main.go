@@ -1,26 +1,36 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
-func multiplier(factor int) func(int) int {
-	return func(n int) int {
-		return n * factor
+func retry(attempt int, fn func() error) error {
+	var err error
+	for i := 2; i <= attempt; i++ {
+		err = fn()
+		if err == nil {
+			fmt.Printf("Attempt %d: Success!\n", i)
+			return nil
+		}
+		fmt.Printf("Atempt %d: Failed with error: %v\n", i, err)
 	}
+	return fmt.Errorf("after %d attempts, last error: %w", attempt, err)
 }
 
 func main() {
-	var fns []func()
-
-	for i := 0; i < 3; i++ {
-		i := i // shadow variable
-		fns = append(fns, func() {
-			fmt.Println(i)
-		})
+	failures := 0
+	flackyfunc := func() error {
+		if failures < 2 {
+			failures++
+			return errors.New("temporary connection issue")
+		}
+		return nil
 	}
-
-	for _, fn := range fns {
-		fn()
+	err := retry(3, flackyfunc)
+	if err != nil {
+		fmt.Println("final result: failed the task")
+	} else {
+		fmt.Println("final resukt tast complited")
 	}
-	mult := multiplier(4)
-	fmt.Println(mult(4))
 }

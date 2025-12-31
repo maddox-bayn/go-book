@@ -1,16 +1,17 @@
 package Book
 
-func binarySearch(nums []int, target int) bool {
+func binerySearch(nums []int, terget int) bool {
 	if len(nums) == 0 {
 		return false
 	}
 
 	mid := len(nums) / 2
-
-	if nums[mid] == target {
+	if nums[mid] == terget {
 		return true
-	} else if nums[mid] > target {
-		return binarySearch(nums[:mid], target)
 	}
-	return binarySearch(nums[mid+1:], target)
+	if nums[mid] > terget {
+		return binerySearch(nums[:mid], terget)
+	}
+	return binerySearch(nums[mid+1:], terget)
+
 }
